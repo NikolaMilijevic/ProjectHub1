@@ -40,5 +40,18 @@ namespace ProjectHub.API.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] string refreshToken)
+        {
+            var result = await _authService.RefreshTokenAsync(refreshToken);
+
+            if (result == null)
+            {
+                return Unauthorized(new { message = "Invalid refresh token" });
+            }
+
+            return Ok(result);
+        }
     }
 }

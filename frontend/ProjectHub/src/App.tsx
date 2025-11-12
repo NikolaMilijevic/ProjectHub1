@@ -14,6 +14,7 @@ import ViewProject from "./pages/view-project";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Login from "./pages/login";
 import Register from "./pages/register";
+import DashboardStats from "./pages/dashboard-stats";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,12 @@ export const viewProjectRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	path: "/view-project/$projectId",
 	component: ViewProject,
+});
+
+export const dashboardStatsRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/dashboard-stats",
+	component: DashboardStats,
 });
 
 export const authRoute = createRoute({
@@ -72,6 +79,7 @@ const routeTree = rootRoute.addChildren({
 		dashboardRoute,
 		newProjectRoute,
 		viewProjectRoute,
+		dashboardStatsRoute
 	}),
 });
 

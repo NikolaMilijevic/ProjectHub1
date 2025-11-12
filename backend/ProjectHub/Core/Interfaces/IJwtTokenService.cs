@@ -6,5 +6,6 @@ namespace ProjectHub.Core.Interfaces
     public interface IJwtTokenService
     {
         AuthResponseDto GenerateToken(User user);
+        RefreshToken GenerateRefreshToken(User user);
     }
 }

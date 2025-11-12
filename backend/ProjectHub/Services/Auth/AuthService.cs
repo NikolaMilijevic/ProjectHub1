@@ -12,6 +12,7 @@ namespace ProjectHub.Services.Auth
     {
         Task<AuthResult?> RegisterAsync(RegisterDto dto);
         Task<AuthResult?> LoginAsync(LoginDto dto);
+        Task<AuthResult?> RefreshTokenAsync(string refreshToken);
     }
     public class AuthService : IAuthService
     {
@@ -47,7 +48,18 @@ namespace ProjectHub.Services.Auth
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            return AuthResult.Ok(_jwtService.GenerateToken(user));
+            var accessToken = _jwtService.GenerateToken(user).AccessToken;
+            var refreshToken = _jwtService.GenerateRefreshToken(user);
+
+            await _context.RefreshTokens.AddAsync(refreshToken);
+            await _context.SaveChangesAsync();
+
+            return AuthResult.Ok(new AuthResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken.Token,
+                Email = user.Email,
+            });
         }
 
         public async Task<AuthResult> LoginAsync(LoginDto dto)
@@ -61,7 +73,43 @@ namespace ProjectHub.Services.Auth
             if (result == PasswordVerificationResult.Failed)
                 return AuthResult.Fail("Invalid credentials.");
 
-            return AuthResult.Ok(_jwtService.GenerateToken(user));
+            var accessToken = _jwtService.GenerateToken(user).AccessToken;
+            var refreshToken = _jwtService.GenerateRefreshToken(user);
+
+            await _context.RefreshTokens.AddAsync(refreshToken);
+            await _context.SaveChangesAsync();
+
+            return AuthResult.Ok(new AuthResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken.Token,
+                Email = user.Email
+            });
+        }
+
+        public async Task<AuthResult?> RefreshTokenAsync(string refreshToken)
+        {
+            var token = await _context.RefreshTokens
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.Token == refreshToken);
+
+            if (token == null || token.IsRevoked || token.ExpiresAt <= DateTime.UtcNow)
+                return AuthResult.Fail("Invalid or expired refresh token");
+
+            token.IsRevoked = true;
+
+            var accessToken = _jwtService.GenerateToken(token.User).AccessToken;
+            var newRefreshToken = _jwtService.GenerateRefreshToken(token.User);
+
+            await _context.RefreshTokens.AddAsync(newRefreshToken);
+            await _context.SaveChangesAsync();
+
+            return AuthResult.Ok(new AuthResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = newRefreshToken.Token,
+                Email = token.User.Email
+            });
         }
     }
 }

@@ -10,8 +10,9 @@ const Login = () => {
 	const handleSubmit = async (values: { email: string; password: string }) => {
 		try {
 			const data = await login(values);
-			if (data.token) {
-				localStorage.setItem("token", data.token);
+			if (data.accessToken && data.refreshToken) {
+				localStorage.setItem("accessToken", data.accessToken);
+				localStorage.setItem("refreshToken", data.refreshToken);
 				toast.success("Login successful!");
 				navigate({ to: "/dashboard" });
 			} else {

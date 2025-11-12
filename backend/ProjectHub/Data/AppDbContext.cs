@@ -10,6 +10,7 @@ namespace ProjectHub.Data
         public DbSet<Client> Clients => Set<Client>();
         public DbSet<Project> Projects => Set<Project>();
         public DbSet<User> Users => Set<User>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

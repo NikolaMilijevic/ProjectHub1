@@ -4,6 +4,7 @@ using ProjectHub.Core.Interfaces;
 using ProjectHub.Shared.DTOs;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace ProjectHub.Services.Auth
@@ -39,9 +40,19 @@ namespace ProjectHub.Services.Auth
 
             return new AuthResponseDto
             {
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Email = user.Email
             };
         }
+        public RefreshToken GenerateRefreshToken(User user)
+        {
+            return new RefreshToken
+            {
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                UserId = user.Id,
+                ExpiresAt = DateTime.UtcNow.AddDays(7)
+            };
+        }
+
     }
 }

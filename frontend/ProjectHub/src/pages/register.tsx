@@ -13,8 +13,9 @@ const Register = () => {
 		setServerError("");
 		try {
 			const data = await register(values);
-			if (data.token) {
-				localStorage.setItem("token", data.token);
+			if (data.accessToken && data.refreshToken) {
+				localStorage.setItem("accessToken", data.accessToken);
+				localStorage.setItem("refreshToken", data.refreshToken);
 				toast.success("Registration successful!");
 				navigate({ to: "/dashboard" });
 			} else {
