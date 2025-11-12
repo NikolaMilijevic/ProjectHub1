@@ -16,26 +16,8 @@ namespace ProjectHub.Services
             _db = db;
         }
 
-        private async Task<Client> GetOrCreateClientsAsync(string clientName)
-        {
-            var client = await _db.Clients
-                .FirstOrDefaultAsync(c => c.Name.ToLower() == clientName.ToLower());
-
-            if (client == null)
-            {
-                client = new Client { Name = clientName };
-                _db.Clients.Add(client);
-                await _db.SaveChangesAsync();
-            }
-
-            return client; 
-        }
-
         public async Task<ProjectDto> CreateProjectAsync(ProjectCreateDto dto)
         {
-            using var transaction = await _db.Database.BeginTransactionAsync();
-            try
-            {
                 var client = await GetOrCreateClientsAsync(dto.ClientName);
 
                 var project = new Project
@@ -54,21 +36,13 @@ namespace ProjectHub.Services
                 _db.Projects.Add(project);
                 await _db.SaveChangesAsync();
 
-                await transaction.CommitAsync();
                 return ProjectMapper.ToDto(project);
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
         }
 
         public async Task<ProjectDto?> GetProjectByIdAsync(int id)
         {
             return await _db.Projects
                 .AsNoTracking()
-                .Where(p => p.Id == id)
                 .Select(p => new ProjectDto
                 {
                     Id = p.Id,
@@ -84,7 +58,7 @@ namespace ProjectHub.Services
                     CreatedAt = p.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
                     UpdatedAt = (p.ModifiedAt ?? p.CreatedAt).ToString("yyyy-MM-ddTHH:mm:ssZ"),
                 })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<List<ProjectDto>> GetAllProjectsAsync()
@@ -109,7 +83,7 @@ namespace ProjectHub.Services
                 .ToListAsync();
         }
 
-        public async Task<ProjectDto?> UpdateProjectAsync(int id, ProjectUpdateDto? dto)
+        public async Task<ProjectDto?> UpdateProjectAsync(int id, ProjectUpdateDto dto)
         {
             var project = await _db.Projects.FindAsync(id);
             if (project == null)
@@ -117,31 +91,21 @@ namespace ProjectHub.Services
                 return null;
             }
 
-            using var transaction = await _db.Database.BeginTransactionAsync();
-            try
-            {
-                var client = await GetOrCreateClientsAsync(dto.ClientName);
+            var client = await GetOrCreateClientsAsync(dto.ClientName);
 
-                project.Title = dto.Title;
-                project.Description = dto.Description;
-                project.Budget = dto.Budget;
-                project.StartDate = DateOnly.FromDateTime(dto.StartDate);
-                project.DueDate = DateOnly.FromDateTime(dto.DueDate);
-                project.InitialStatus = dto.InitialStatus;
-                project.PriorityLevel = dto.PriorityLevel;
-                project.Progress = dto.Progress;
-                project.ClientId = client.Id;
+            project.Title = dto.Title;
+            project.Description = dto.Description;
+            project.Budget = dto.Budget;
+            project.StartDate = DateOnly.FromDateTime(dto.StartDate);
+            project.DueDate = DateOnly.FromDateTime(dto.DueDate);
+            project.InitialStatus = dto.InitialStatus;
+            project.PriorityLevel = dto.PriorityLevel;
+            project.Progress = dto.Progress;
+            project.ClientId = client.Id;
 
-                await _db.SaveChangesAsync();
-                await transaction.CommitAsync();
+            await _db.SaveChangesAsync();
 
-                return ProjectMapper.ToDto(project);
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
+            return ProjectMapper.ToDto(project);
         }
 
         public async Task<bool> DeleteProjectAsync(int id)
@@ -223,5 +187,19 @@ namespace ProjectHub.Services
             return (projects, totalCount);
         }
 
+        private async Task<Client> GetOrCreateClientsAsync(string clientName)
+        {
+            var client = await _db.Clients
+                .FirstOrDefaultAsync(c => c.Name.ToLower() == clientName.ToLower());
+
+            if (client == null)
+            {
+                client = new Client { Name = clientName };
+                _db.Clients.Add(client);
+                await _db.SaveChangesAsync();
+            }
+
+            return client;
+        }
     }
 }

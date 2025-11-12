@@ -15,37 +15,64 @@ namespace ProjectHub.Api.Controllers
             _projectService = projectService;
         }
 
-        private ActionResult<T> Wrap<T>(T? entity) => entity == null ? NotFound() : Ok(entity);
-
         [HttpPost]
         public async Task<ActionResult<ProjectDto>> Create(ProjectCreateDto dto)
         {
             var project = await _projectService.CreateProjectAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = project.Id }, project);
+
+            if (project == null)
+            {
+                return BadRequest(new { message = "Failed to create project." });
+            }
+
+            return Ok(project);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ProjectDto>> GetById(int id)
         {
-            return Wrap(await _projectService.GetProjectByIdAsync(id));
+            var project = await _projectService.GetProjectByIdAsync(id);
+
+            if(project == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(project);
         }
 
         [HttpGet]
         public async Task<ActionResult<List<ProjectDto>>> GetAll()
         {
-            return Ok(await _projectService.GetAllProjectsAsync());
+            var projects = _projectService.GetAllProjectsAsync();
+
+            return Ok(projects);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<ProjectDto>> Update(int id, ProjectUpdateDto dto)
         {
-            return Wrap(await _projectService.UpdateProjectAsync(id, dto));
+            var updatedProject = await _projectService.UpdateProjectAsync(id, dto);
+
+            if (updatedProject == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(updatedProject);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            return await _projectService.DeleteProjectAsync(id) ? NoContent() : NotFound();
+            var deleted = await _projectService.DeleteProjectAsync(id);
+
+            if(!deleted)
+            {
+                return NotFound();
+            }
+
+            return Ok(deleted);
         }
 
         [HttpGet("paged")]
@@ -53,13 +80,15 @@ namespace ProjectHub.Api.Controllers
         {
             var (projects, totalCount) = await _projectService.GetProjectsPagedAsync(query);
 
-            return Ok(new PagedResult<ProjectDto>
+            var pagedResults = new PagedResult<ProjectDto>
             {
                 TotalCount = totalCount,
                 PageNumber = query.PageNumber,
                 PageSize = query.PageSize,
                 Items = projects,
-            });
+            };
+
+            return Ok(pagedResults);
         }
     }
 }

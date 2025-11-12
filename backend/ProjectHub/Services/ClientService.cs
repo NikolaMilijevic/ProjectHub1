@@ -29,23 +29,24 @@ namespace ProjectHub.Services
         public async Task<ClientDto?> GetClientByIdAsync(int id)
         {
             return await _db.Clients
-                .Where(c => c.Id == id)
                 .Select(c => new ClientDto
                 {
                     Id = c.Id,
                     Name = c.Name,
                     ProjectCount = c.Projects.Count(),
                 })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<bool> DeleteClientByIdAsync(int id)
         {
-            var deleted = await _db.Clients
-                .Where(c => c.Id == id)
-                .ExecuteDeleteAsync();
+            var client = await _db.Clients.FindAsync(id);
+            if (client == null)
+                return false;
 
-            return deleted > 0;
+            _db.Clients.Remove(client);
+            await _db.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -18,17 +18,27 @@ namespace ProjectHub.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            return (await _authService.RegisterAsync(dto)) is { } result
-                ? Ok(result)
-                : BadRequest(new { message = "Email already  exists" });
+            var result = await _authService.RegisterAsync(dto);
+
+            if (result == null)
+            {
+                return BadRequest(new { message = "Email already exists" });
+            }
+
+            return Ok(result);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            return (await _authService.LoginAsync(dto)) is { } result
-            ? Ok(result)
-            : Unauthorized(new { message = "Invalid credentials " });
+            var result = await _authService.LoginAsync(dto);
+
+            if (result == null)
+            {
+                return Unauthorized(new { message = "Invalid credentials" });
+            }
+
+            return Ok(result);
         }
     }
 }

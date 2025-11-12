@@ -42,7 +42,7 @@ namespace ProjectHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clients");
+                    b.ToTable("Clients", (string)null);
                 });
 
             modelBuilder.Entity("ProjectHub.Core.Entities.Project", b =>
@@ -92,7 +92,7 @@ namespace ProjectHub.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("ProjectHub.Core.Entities.User", b =>

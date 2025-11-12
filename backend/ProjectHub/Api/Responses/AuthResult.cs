@@ -1,6 +1,6 @@
 ﻿using ProjectHub.Shared.DTOs;
 
-namespace ProjectHub.Services.Auth
+namespace ProjectHub.Api.Responses
 {
     public class AuthResult
     {

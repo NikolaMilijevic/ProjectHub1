@@ -8,6 +8,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text;
 using ProjectHub.Core.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using ProjectHub.Core.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ClientService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 

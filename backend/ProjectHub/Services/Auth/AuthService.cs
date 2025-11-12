@@ -4,6 +4,7 @@ using ProjectHub.Core.Entities;
 using ProjectHub.Data;
 using ProjectHub.Shared.DTOs;
 using ProjectHub.Core.Interfaces;
+using ProjectHub.Api.Responses;
 
 namespace ProjectHub.Services.Auth
 {
@@ -19,17 +20,17 @@ namespace ProjectHub.Services.Auth
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IJwtTokenService _jwtService;
 
-        public AuthService(AppDbContext context, IConfiguration config, IJwtTokenService jwtService)
+        public AuthService(AppDbContext context, IConfiguration config, IJwtTokenService jwtService, IPasswordHasher<User> passwordHasher)
         {
             _context = context;
             _config = config;
             _jwtService = jwtService;
-            _passwordHasher = new PasswordHasher<User>();
+            _passwordHasher = passwordHasher;
         }
 
-        public async Task<AuthResult?> RegisterAsync(RegisterDto dto)
+        public async Task<AuthResult> RegisterAsync(RegisterDto dto)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
+            if (await _context.Users.AsNoTracking().AnyAsync(u => u.Email == dto.Email))
             {
                 return AuthResult.Fail("Email already in use");
             }
@@ -49,9 +50,9 @@ namespace ProjectHub.Services.Auth
             return AuthResult.Ok(_jwtService.GenerateToken(user));
         }
 
-        public async Task<AuthResult?> LoginAsync(LoginDto dto)
+        public async Task<AuthResult> LoginAsync(LoginDto dto)
         {
-            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == dto.Email);
+            var user = await _context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.Email == dto.Email);
 
             if (user == null)
                 return AuthResult.Fail("Invalid credentials.");
