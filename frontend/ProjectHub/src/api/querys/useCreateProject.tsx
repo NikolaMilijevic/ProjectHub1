@@ -14,6 +14,7 @@ import type {
 	ProjectQueryDto,
 	ProjectUpdateDto,
 } from "../../types/project";
+import { getDashboardStats, type DashboardStats } from "../dashboardApi";
 
 export function useCreateProject(currentQuery?: ProjectQueryDto) {
 	const queryClient = useQueryClient();
@@ -91,4 +92,11 @@ export function useUpdateProject() {
 	});
 }
 
-
+export function useDashboardStats() {
+	return useQuery<DashboardStats, Error>({
+		queryKey: ["dashboardStats"],
+		queryFn: getDashboardStats,
+		retry: 1,
+		staleTime: 1000 * 60,
+	});
+}

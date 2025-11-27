@@ -7,6 +7,12 @@ export interface DashboardStats {
 }
 
 export const getDashboardStats = async (): Promise<DashboardStats> => {
-	const res = await axiosInstance.get("/dashboard/stats");
-	return res.data;
+	try {
+		const res = await axiosInstance.get("/dashboard/stats");
+		return res.data;
+	} catch (error: any) {
+		const message =
+			error.response?.data?.message || "Failed to fetch dashboard statistics";
+		throw new Error(message);
+	}
 };
