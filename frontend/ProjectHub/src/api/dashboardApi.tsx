@@ -4,6 +4,13 @@ export interface DashboardStats {
 	totalUsers: number;
 	totalProjects: number;
 	totalVisitors: number;
+	users: {
+		id: string,
+		firstName: string;
+		lastName: string;
+		email: string;
+		role: string;
+	}[];
 }
 
 export const getDashboardStats = async (): Promise<DashboardStats> => {

@@ -13,7 +13,7 @@ const Register = () => {
 		setServerError("");
 		try {
 			const data = await register(values);
-			if (data.accessToken && data.refreshToken) {
+			if (data?.accessToken && data?.refreshToken) {
 				localStorage.setItem("accessToken", data.accessToken);
 				localStorage.setItem("refreshToken", data.refreshToken);
 				toast.success("Registration successful!");

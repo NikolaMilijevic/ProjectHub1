@@ -27,7 +27,8 @@ namespace ProjectHub.Services.Auth
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim("id", user.Id.ToString()),
-                new Claim("name", $"{user.FirstName} {user.LastName}")
+                new Claim("name", $"{user.FirstName} {user.LastName}"),
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
             };
 
             var token = new JwtSecurityToken(

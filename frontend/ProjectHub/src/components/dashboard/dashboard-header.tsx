@@ -2,9 +2,11 @@ import NavigationButton from "../ui-custom/navigation-button";
 import violetFolder from "../../assets/violet-folder.png";
 import { Button } from "../ui/button";
 import { useNavigate } from "@tanstack/react-router";
+import { getCurrentUser } from "@/types/auth";
 
 const DashboardHeader = () => {
 	const navigate = useNavigate();
+	const user = getCurrentUser();
 
 	const handleLogout = () => {
 		localStorage.removeItem("accessToken");
@@ -28,6 +30,14 @@ const DashboardHeader = () => {
 				</div>
 			</div>
 			<div className='flex items-center space-x-4'>
+				{user?.role === "Admin" && (
+					<NavigationButton
+						buttonText="Statistics"
+						buttonRoute="/dashboard/stats"
+						icon=''
+						className="bg-yellow-400 hover:bg-yellow-500 text-white hover:text-white p-4"
+					/>
+				)}
 				<NavigationButton
 					buttonText='+ New Project'
 					buttonRoute='/new-project'

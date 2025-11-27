@@ -5,16 +5,19 @@ import {
 	Outlet,
 	RouterProvider,
 } from "@tanstack/react-router";
+
 import CreateProject from "./pages/create-project";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "react-hot-toast";
-import NotFoundPage from "./pages/not-found";
 import Dashboard from "./pages/dashboard";
 import ViewProject from "./pages/view-project";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Login from "./pages/login";
 import Register from "./pages/register";
-import DashboardStats from "./pages/dashboard-stats";
+import DashboardStatsComponent from "./pages/dashboard-stats";
+import NotFoundPage from "./pages/not-found";
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Toaster } from "react-hot-toast";
+import { requireAdmin } from "./routes/routeGuards";
 
 const queryClient = new QueryClient();
 
@@ -23,35 +26,11 @@ const rootRoute = createRootRoute({
 	notFoundComponent: () => <NotFoundPage />,
 });
 
-const dashboardRoute = createRoute({
-	getParentRoute: () => rootRoute,
-	path: "/dashboard",
-	component: Dashboard,
-});
-
-const newProjectRoute = createRoute({
-	getParentRoute: () => rootRoute,
-	path: "/new-project",
-	component: CreateProject,
-});
-
-export const viewProjectRoute = createRoute({
-	getParentRoute: () => rootRoute,
-	path: "/view-project/$projectId",
-	component: ViewProject,
-});
-
-export const dashboardStatsRoute = createRoute({
-	getParentRoute: () => rootRoute,
-	path: "/dashboard-stats",
-	component: DashboardStats,
-});
-
-export const authRoute = createRoute({
+const authRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	path: "/",
 	component: () => {
-		const token = localStorage.getItem("token");
+		const token = localStorage.getItem("accessToken");
 		if (!token) {
 			window.location.href = "/login";
 			return null;
@@ -72,6 +51,33 @@ const registerRoute = createRoute({
 	component: Register,
 });
 
+const dashboardRoute = createRoute({
+	getParentRoute: () => authRoute,
+	path: "/dashboard",
+	component: Dashboard,
+});
+
+const newProjectRoute = createRoute({
+	getParentRoute: () => authRoute,
+	path: "/new-project",
+	component: CreateProject,
+});
+
+export const viewProjectRoute = createRoute({
+	getParentRoute: () => authRoute,
+	path: "/view-project/$projectId",
+	component: ViewProject,
+});
+
+export const dashboardStatsRoute = createRoute({
+	getParentRoute: () => authRoute,
+	path: "/dashboard/stats",
+	beforeLoad: () => {
+		requireAdmin();
+	},
+	component: DashboardStatsComponent,
+});
+
 const routeTree = rootRoute.addChildren({
 	loginRoute,
 	registerRoute,
@@ -79,20 +85,18 @@ const routeTree = rootRoute.addChildren({
 		dashboardRoute,
 		newProjectRoute,
 		viewProjectRoute,
-		dashboardStatsRoute
+		dashboardStatsRoute,
 	}),
 });
 
 const router = createRouter({ routeTree });
 
-const App = () => {
-	return (
-		<QueryClientProvider client={queryClient}>
-			<ReactQueryDevtools />
-			<RouterProvider router={router} />
-			<Toaster position='top-center' />
-		</QueryClientProvider>
-	);
-};
+const App = () => (
+	<QueryClientProvider client={queryClient}>
+		<ReactQueryDevtools />
+		<RouterProvider router={router} />
+		<Toaster position='top-center' />
+	</QueryClientProvider>
+);
 
 export default App;
