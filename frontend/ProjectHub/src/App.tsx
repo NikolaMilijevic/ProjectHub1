@@ -18,6 +18,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
 import { requireAdmin } from "./routes/routeGuards";
+import { ThemeProvider } from "./components/ui-custom/theme-provider";
+import LandingPage from "./pages/landing";
 
 const queryClient = new QueryClient();
 
@@ -78,9 +80,16 @@ export const dashboardStatsRoute = createRoute({
 	component: DashboardStatsComponent,
 });
 
+export const landingRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/landing",
+	component: LandingPage,
+});
+
 const routeTree = rootRoute.addChildren({
 	loginRoute,
 	registerRoute,
+	landingRoute,
 	authRoute: authRoute.addChildren({
 		dashboardRoute,
 		newProjectRoute,
@@ -92,11 +101,26 @@ const routeTree = rootRoute.addChildren({
 const router = createRouter({ routeTree });
 
 const App = () => (
-	<QueryClientProvider client={queryClient}>
-		<ReactQueryDevtools />
-		<RouterProvider router={router} />
-		<Toaster position='top-center' />
-	</QueryClientProvider>
+	<ThemeProvider>
+		<QueryClientProvider client={queryClient}>
+			<ReactQueryDevtools />
+			<RouterProvider router={router} />
+			<Toaster
+				position='top-center'
+				toastOptions={{
+					duration: 2000,
+					style: {
+						backdropFilter: "blur(12px)",
+						background: "var(--background)/80",
+						color: "var(--foreground)",
+						border: "1px solid rgba(255,255,255,0.1)",
+						borderRadius: "12px",
+						padding: "16px",
+					},
+				}}
+			/>
+		</QueryClientProvider>
+	</ThemeProvider>
 );
 
 export default App;

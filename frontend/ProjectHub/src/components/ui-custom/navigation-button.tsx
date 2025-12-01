@@ -24,7 +24,7 @@ const NavigationButton = ({
 				"bg-white hover:bg-white p-2 text-sm cursor-pointer",
 				className
 			)}
-			onClick={() => router.navigate({ to: buttonRoute })}
+			onClick={() => router.navigate({ to: buttonRoute, search: (prev: any) => prev })}
 		>
 			{icon ?? <ArrowLeft className='w-4 h-4 mr-1' />}
 			{buttonText}

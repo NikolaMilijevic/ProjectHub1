@@ -91,8 +91,8 @@ const ShadcnPagination = ({
 						onClick={handleNavigate(currentPage - 1)}
 						className={
 							isFirst
-								? "text-white bg-violet-700/20 hover:text-white hover:bg-violet-700/20"
-								: "text-white bg-violet-700 hover:text-white hover:bg-violet-500"
+								? "text-white bg-violet-700/20 hover:text-white hover:bg-violet-700/20 dark:hover:bg-violet-700/20"
+								: "text-white bg-violet-700 hover:text-white hover:bg-violet-500 dark:hover:bg-violet-500"
 						}
 					/>
 				</PaginationItem>
@@ -110,8 +110,8 @@ const ShadcnPagination = ({
 								onClick={handleNavigate(page)}
 								className={
 									page === currentPage
-										? "text-white bg-violet-400 hover:bg-violet-300 hover:text-white"
-										: "bg-white text-gray-700 hover:bg-violet-100"
+										? "text-white bg-violet-400 dark:bg-violet-400 hover:bg-violet-300 dark:hover:bg-violet-300 hover:text-white"
+										: "bg-white dark:bg-neutral-700/30 text-gray-700 dark:text-white hover:bg-violet-100"
 								}
 							>
 								{page}
@@ -127,8 +127,8 @@ const ShadcnPagination = ({
 						onClick={handleNavigate(currentPage + 1)}
 						className={
 							currentPage === totalPages
-								? "text-white bg-violet-700/20 hover:text-white hover:bg-violet-700/20"
-								: "text-white bg-violet-700 hover:text-white hover:bg-violet-500"
+								? "text-white bg-violet-700/20 hover:text-white hover:bg-violet-700/20 dark:hover:bg-violet-700/20"
+								: "text-white bg-violet-700 hover:text-white hover:bg-violet-500 dark:hover:bg-violet-500"
 						}
 					/>
 				</PaginationItem>

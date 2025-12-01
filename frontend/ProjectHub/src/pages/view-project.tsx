@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "@tanstack/react-router";
+import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { Formik, Form, type FormikHelpers } from "formik";
 
 import Header from "@/components/new-project-form/header";
@@ -23,12 +23,15 @@ import toast from "react-hot-toast";
 import { useState, useRef, useMemo } from "react";
 import { Button } from "../components/ui/button";
 import { InitialStatus, PriorityLevel } from "@/types/enums";
+import { motion } from "framer-motion";
 
 const ViewProject = () => {
 	const { projectId } = useParams({ from: "/view-project/$projectId" });
 	const navigate = useNavigate();
 	const hasShownInvalidToast = useRef(false);
 	const [isEditing, setIsEditing] = useState(false);
+	const search = useSearch({ from: "/view-project/$projectId" });
+	const page = search.page ?? 1;
 
 	const numericId = Number(projectId);
 	const isInvalidId = isNaN(numericId) || numericId <= 0;
@@ -38,14 +41,14 @@ const ViewProject = () => {
 			toast.error("Invalid project id", {
 				duration: 4000,
 				style: {
-					background: "#fee2e2",
-					color: "#991b1b",
-					border: "1px solid #f87171",
+					background: "var(--destructive-bg, #fee2e2)",
+					color: "var(--destructive-foreground, #991b1b)",
+					border: "1px solid var(--destructive-border, #f87171)",
 				},
 			});
 			hasShownInvalidToast.current = true;
 		}
-		navigate({ to: "/dashboard" });
+		navigate({ to: "/dashboard", search: { page } });
 		return null;
 	}
 
@@ -67,12 +70,12 @@ const ViewProject = () => {
 							data.initialStatus as InitialStatus
 						)
 							? data.initialStatus
-							: InitialStatus.Planning, // "Planning"
+							: InitialStatus.Planning,
 						priorityLevel: Object.values(PriorityLevel).includes(
 							data.priorityLevel as PriorityLevel
 						)
 							? data.priorityLevel
-							: PriorityLevel.Low, //"Low"
+							: PriorityLevel.Low,
 						startDate: data.startDate.split("T")[0],
 						dueDate: data.dueDate.split("T")[0],
 						progress: data.progress ?? 0,
@@ -122,7 +125,7 @@ const ViewProject = () => {
 			{
 				onSuccess: () => {
 					toast.success("Project successfully updated!");
-					navigate({ to: "/dashboard" });
+					navigate({ to: "/dashboard", search: { page } });
 				},
 				onError: () => {
 					toast.error("Failed to update project!");
@@ -137,7 +140,7 @@ const ViewProject = () => {
 		deleteProject(data.id.toString(), {
 			onSuccess: () => {
 				toast.success("Project deleted successfully");
-				navigate({ to: "/dashboard" });
+				navigate({ to: "/dashboard", search: { page } });
 			},
 			onError: () => toast.error("Failed to delete project"),
 		});
@@ -146,63 +149,88 @@ const ViewProject = () => {
 	if (isLoading) return <Loading />;
 	if (isError || !data)
 		return (
-			<p className='flex justify-center items-center h-screen text-gray-500'>
+			<p className='flex justify-center items-center h-screen text-muted-foreground'>
 				Failed to load project.
 			</p>
 		);
 
 	return (
-		<div>
+		<div className='min-h-screen relative bg-[var(--background)] text-[var(--foreground)] transition-colors'>
+			{/* Header */}
 			<Header headerText='View Project' />
-			<div className='w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 lg:my-6 py-6 shadow rounded-xl mt-10 bg-white'>
-				<ProjectInformation
-					projectDescription='View, edit and delete project information.'
-					deleteDialog={
-						<div>
-							<Button
-								type='button'
-								onClick={() => setIsEditing((prev) => !prev)}
-								className={`group px-3 py-1 mr-2 ${
-									isEditing
-										? "bg-yellow-200 hover:bg-yellow-600"
-										: "bg-gray-50 hover:bg-yellow-500"
-								}`}
-							>
-								<Pencil
-									className={`w-4 h-4 transition-colors ${
-										isEditing
-											? "text-yellow-600 group-hover:text-white"
-											: "text-yellow-500 group-hover:text-white"
-									}`}
-								/>
-							</Button>
-							<ConfirmDialog
-								triggerLabel='Delete'
-								triggerIcon={
-									<Trash2 className='w-4 h-4 transition-colors text-red-500 group-hover:text-white' />
-								}
-								triggerVariant='destructive'
-								className='group bg-gray-100/50 text-red-500 ml-2'
-								title='Are you sure?'
-								description='This action cannot be undone. This will permanently delete the project.'
-								onConfirm={handleDelete}
-							/>
-						</div>
-					}
+
+			{/* Background Glow */}
+			<div className='absolute inset-x-0 top-17 bottom-0 pointer-events-none overflow-hidden z-0'>
+				<div
+					className='absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[120%] rounded-3xl
+          bg-gradient-to-br from-purple-500 via-purple-200/20 to-transparent
+          opacity-20 blur-3xl dark:from-purple-800 dark:via-transparent'
 				/>
-				<Formik
-					initialValues={initialValues}
-					validationSchema={validationSchema}
-					onSubmit={handleSubmit}
-					enableReinitialize
+				<div
+					className='absolute bottom-0 right-1/2 translate-x-1/2 w-[120%] h-[120%] rounded-3xl
+          bg-gradient-to-tl from-pink-400 via-pink-200/20 to-transparent
+          opacity-15 blur-3xl dark:from-pink-900 dark:via-transparent'
+				/>
+			</div>
+
+			{/* Main Card */}
+			<div className='relative z-10 flex justify-center px-4 mt-6'>
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.6 }}
+					className='w-full max-w-4xl p-8 bg-[var(--background)]/60 dark:bg-neutral-900/50 border border-[var(--border)] backdrop-blur-lg rounded-2xl shadow-xl transition-colors'
 				>
-					<Form className='grid gap-4'>
-						<BasicInfo disabled={!isEditing} />
-						<FinancialTimeline disabled={!isEditing} />
-						<StatusProgress disabled={!isEditing} />
-						<FormActions />
-					</Form>
-				</Formik>
+					<ProjectInformation
+						projectDescription='View, edit and delete project information.'
+						deleteDialog={
+							<div className='flex'>
+								<Button
+									type='button'
+									onClick={() => setIsEditing((prev) => !prev)}
+									className={`group px-3 py-1 mr-2 cursor-pointer ${
+										isEditing
+											? "bg-yellow-200 hover:bg-yellow-500 dark:bg-yellow-600 dark:hover:bg-yellow-500"
+											: "bg-gray-50 hover:bg-yellow-500 dark:bg-gray-700 dark:hover:bg-yellow-500"
+									}`}
+								>
+									<Pencil
+										className={`w-4 h-4 transition-colors ${
+											isEditing
+												? "text-yellow-600 group-hover:text-white dark:text-yellow-300"
+												: "text-yellow-500 group-hover:text-white dark:text-yellow-300"
+										}`}
+									/>
+								</Button>
+								<ConfirmDialog
+									triggerLabel='Delete'
+									triggerIcon={
+										<Trash2 className='w-4 h-4 transition-colors text-red-500 group-hover:text-white dark:text-red-400 dark:group-hover:text-white' />
+									}
+									triggerVariant='destructive'
+									className='group bg-gray-100/50 dark:bg-gray-700 text-red-500 ml-2 dark:hover:bg-red-500 cursor-pointer'
+									title='Are you sure?'
+									description='This action cannot be undone. This will permanently delete the project.'
+									onConfirm={handleDelete}
+								/>
+							</div>
+						}
+					/>
+
+					<Formik
+						initialValues={initialValues}
+						validationSchema={validationSchema}
+						onSubmit={handleSubmit}
+						enableReinitialize
+					>
+						<Form className='grid gap-4 mt-6'>
+							<BasicInfo disabled={!isEditing} />
+							<FinancialTimeline disabled={!isEditing} />
+							<StatusProgress disabled={!isEditing} />
+							<FormActions />
+						</Form>
+					</Formik>
+				</motion.div>
 			</div>
 		</div>
 	);

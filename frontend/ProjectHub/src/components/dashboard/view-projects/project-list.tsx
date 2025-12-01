@@ -1,4 +1,3 @@
-// import type { Project } from "../../features/project-form/types";
 import type { ProjectDto } from "@/types/project";
 import ProjectCard from "./project-card";
 

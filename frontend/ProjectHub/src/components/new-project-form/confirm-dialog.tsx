@@ -62,10 +62,10 @@ const ConfirmDialog = ({
 					<AlertDialogDescription>{description}</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
+					<AlertDialogCancel className="cursor-pointer">{cancelLabel}</AlertDialogCancel>
 					<AlertDialogAction
 						onClick={onConfirm}
-						className='bg-green-500 hover:bg-green-700'
+						className='bg-green-500 hover:bg-green-700 cursor-pointer'
 					>
 						{confirmLabel}
 					</AlertDialogAction>

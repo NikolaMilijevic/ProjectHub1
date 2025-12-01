@@ -8,6 +8,13 @@ export interface DecodedToken {
 	exp: number;
 }
 
+export interface CurrentUser {
+	email: string;
+	id: string;
+	name: string;
+	role: string;
+}
+
 export function getToken() {
 	return localStorage.getItem("accessToken");
 }

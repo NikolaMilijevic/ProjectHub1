@@ -21,7 +21,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
 				placeholder='Search projects...'
 				value={value}
 				onChange={(e) => onChange(e.target.value)}
-				className='flex-grow min-w-0 outline-none truncate'
+				className='flex-grow min-w-0 outline-none truncate placeholder:text-gray-600 dark:placeholder:text-gray-400'
 			/>
 		</div>
 	)
