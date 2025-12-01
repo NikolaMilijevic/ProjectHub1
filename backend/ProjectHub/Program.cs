@@ -27,7 +27,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000")
+            policy.WithOrigins(
+                "http://localhost:3000",
+                "https://project-hub1-b3ip-bhqljzaqu-nikolamilijevic5-1628s-projects.vercel.app"
+                )
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
