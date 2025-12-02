@@ -35,7 +35,7 @@ axiosInstance.interceptors.response.use(
         const refreshUrl =
           import.meta.env.NODE_ENV === "development"
             ? "http://localhost:5000/api/auth/refresh"
-            : `${BASE_URL}/auth/refresh`;
+            : `${BASE_URL}/api/auth/refresh`;
 
         const refreshRes = await axios.post(refreshUrl, {
           token: localStorage.getItem("refreshToken"),
