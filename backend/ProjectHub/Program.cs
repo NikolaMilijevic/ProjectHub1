@@ -22,20 +22,17 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
     });
 
-var frontendUrls = new[]
-{
-    "http://localhost:3000",
-    builder.Configuration["FRONTEND_URL"] ?? "https://project-hub1-b3ip.vercel.app"
-};
+var frontendUrl = builder.Configuration["FRONTEND_URL"]
+                 ?? "http://localhost:3000";
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins(frontendUrls)
+            policy.WithOrigins(frontendUrl)
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
         });
 });
 
