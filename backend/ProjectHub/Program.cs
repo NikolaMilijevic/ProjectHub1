@@ -22,15 +22,14 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
     });
 
+var frontendUrl = builder.Configuration["FRONTEND_URL"] ?? "http://localhost:3000";
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins(
-                "http://localhost:3000",
-                "https://project-hub1-b3ip-bhqljzaqu-nikolamilijevic5-1628s-projects.vercel.app"
-                )
+            policy.WithOrigins(frontendUrl)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
