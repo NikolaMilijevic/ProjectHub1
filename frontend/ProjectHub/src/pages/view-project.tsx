@@ -1,4 +1,4 @@
-import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { Formik, Form, type FormikHelpers } from "formik";
 
 import Header from "@/components/new-project-form/header";
@@ -24,13 +24,14 @@ import { useState, useRef, useMemo } from "react";
 import { Button } from "../components/ui/button";
 import { InitialStatus, PriorityLevel } from "@/types/enums";
 import { motion } from "framer-motion";
+import { dashboardRoute, viewProjectRoute } from "@/App";
 
 const ViewProject = () => {
-	const { projectId } = useParams({ from: "/view-project/$projectId" });
+	const { projectId } = viewProjectRoute.useParams();
 	const navigate = useNavigate();
 	const hasShownInvalidToast = useRef(false);
 	const [isEditing, setIsEditing] = useState(false);
-	const search = useSearch({ from: "/view-project/$projectId" });
+	const search = viewProjectRoute.useSearch();
 	const page = search.page ?? 1;
 
 	const numericId = Number(projectId);
@@ -48,7 +49,8 @@ const ViewProject = () => {
 			});
 			hasShownInvalidToast.current = true;
 		}
-		navigate({ to: "/dashboard", search: { page } });
+		navigate({ to: dashboardRoute.to, search: { page } });
+
 		return null;
 	}
 
@@ -125,7 +127,8 @@ const ViewProject = () => {
 			{
 				onSuccess: () => {
 					toast.success("Project successfully updated!");
-					navigate({ to: "/dashboard", search: { page } });
+					navigate({ to: dashboardRoute.to, search: { page } });
+
 				},
 				onError: () => {
 					toast.error("Failed to update project!");
@@ -140,7 +143,8 @@ const ViewProject = () => {
 		deleteProject(data.id.toString(), {
 			onSuccess: () => {
 				toast.success("Project deleted successfully");
-				navigate({ to: "/dashboard", search: { page } });
+				navigate({ to: dashboardRoute.to, search: { page } });
+
 			},
 			onError: () => toast.error("Failed to delete project"),
 		});

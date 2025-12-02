@@ -67,7 +67,7 @@ export default function LandingPageParallax() {
 
           <div className="flex gap-4 justify-center mt-10">
             <Link to="/dashboard">
-              <Button size="lg" className="px-6 glass-card cursor-pointer">
+              <Button size="lg"  className="px-6 glass-card cursor-pointer">
                 Visit Dashboard <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>

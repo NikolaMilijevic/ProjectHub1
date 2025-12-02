@@ -30,7 +30,7 @@ const rootRoute = createRootRoute({
 
 const authRoute = createRoute({
 	getParentRoute: () => rootRoute,
-	path: "/",
+	id: "auth",
 	component: () => {
 		const token = localStorage.getItem("accessToken");
 		if (!token) {
@@ -40,6 +40,19 @@ const authRoute = createRoute({
 		return <Outlet />;
 	},
 });
+
+const homeRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/",
+	component: () => {
+		const token = localStorage.getItem("accessToken");
+		if(token) {
+			window.location.href = "/dashboard";
+			return null;
+		}
+		return <LandingPage />
+	}
+})
 
 const loginRoute = createRoute({
 	getParentRoute: () => rootRoute,
@@ -53,7 +66,7 @@ const registerRoute = createRoute({
 	component: Register,
 });
 
-const dashboardRoute = createRoute({
+export const dashboardRoute = createRoute({
 	getParentRoute: () => authRoute,
 	path: "/dashboard",
 	component: Dashboard,
@@ -87,6 +100,7 @@ export const landingRoute = createRoute({
 });
 
 const routeTree = rootRoute.addChildren({
+	homeRoute,
 	loginRoute,
 	registerRoute,
 	landingRoute,

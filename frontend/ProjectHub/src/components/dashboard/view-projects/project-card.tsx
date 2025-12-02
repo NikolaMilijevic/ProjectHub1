@@ -3,15 +3,15 @@ import { Progress } from "@/components/ui/progress";
 import BadgeList from "./badge/badge-list";
 import { formatDate } from "./date-utils";
 import type { ProjectDto } from "@/types/project";
-import { Link, useSearch } from "@tanstack/react-router";
-import { viewProjectRoute } from "@/App";
+import { Link } from "@tanstack/react-router";
+import { dashboardRoute, viewProjectRoute } from "@/App";
 
 interface ProjectCardProps {
 	project: ProjectDto;
 }
 
 const ProjectCard = ({ project }: ProjectCardProps) => {
-	const search = useSearch({ from: "/dashboard" });
+	const search = dashboardRoute.useSearch();
 	return (
 		<Link
 			to={viewProjectRoute.to}
