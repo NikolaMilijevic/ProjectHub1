@@ -6,64 +6,75 @@ import { getCurrentUser } from "@/types/auth";
 import { ModeToggle } from "../ui-custom/mode-toggle";
 
 const DashboardHeader = () => {
-	const navigate = useNavigate();
-	const user = getCurrentUser();
+  const navigate = useNavigate();
+  const user = getCurrentUser();
 
-	const handleLogout = () => {
-		localStorage.removeItem("accessToken");
-		localStorage.removeItem("refreshToken");
-		navigate({ to: "/login" });
-	};
+  const isAuthPage = !user; // true for login/register
 
-	return (
-		<header className='flex flex-col sm:flex-row items-center justify-evenly w-full p-4 border-b border-[var(--border)] bg-[var(--background)]'>
-			{/* Logo + Title */}
-			<div className='flex items-center space-x-4 mb-4 sm:mb-0 max-w-full px-4 sm:px-0'>
-				<img
-					src={violetFolder}
-					alt='violet-folder'
-					className='h-12 w-12 rounded-2xl flex-shrink-0'
-				/>
-				<div className='min-w-0'>
-					<p className='text-[var(--header-title)] text-2xl font-bold truncate'>
-						ProjectHub
-					</p>
-					<p className='text-[var(--header-subtitle)] truncate'>
-						Manage your project efficiently
-					</p>
-				</div>
-			</div>
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    navigate({ to: "/login" });
+  };
 
-			{/* Buttons */}
-			<div className='flex items-center space-x-4'>
-				{user && (
-					<>
-						{user?.role === "Admin" && (
-							<NavigationButton
-								buttonText='Statistics'
-								buttonRoute='/dashboard/stats'
-								icon=''
-								className='bg-[var(--btn-statistics)] hover:bg-yellow-500 text-yellow-700 p-4'
-							/>
-						)}
-						<NavigationButton
-							buttonText='+ New Project'
-							buttonRoute='/new-project'
-							icon=''
-							className='bg-[var(--btn-new-project)] hover:bg-violet-500 text-violet-700 p-4'
-						/>
-						<Button
-							onClick={handleLogout}
-							className='bg-[var(--btn-logout)] hover:bg-red-500 text-red-700 px-6 py-3 rounded-md transition cursor-pointer'
-						>
-							Logout
-						</Button>
-					</>
-				)}
-				<ModeToggle />
-			</div>
-		</header>
-	);
+  return (
+    <header
+      className={`relative z-10 w-full border-b border-[var(--border)] bg-[var(--background)] py-4`}
+    >
+      {/* Container for spacing & max-width */}
+      <div className="flex items-center justify-between w-full max-w-4xl mx-auto px-4 flex-wrap gap-4">
+        {/* Left side: Logo + Title */}
+        <div className="flex items-center gap-4 min-w-0 flex-shrink">
+          <img
+            src={violetFolder}
+            alt="violet-folder"
+            className="h-12 w-12 rounded-2xl flex-shrink-0"
+          />
+          <div className="min-w-0">
+            <p className="text-[var(--header-title)] text-xl sm:text-2xl font-bold truncate">
+              ProjectHub
+            </p>
+            <p className="text-[var(--header-subtitle)] text-sm truncate">
+              Manage your project efficiently
+            </p>
+          </div>
+        </div>
+
+        {/* Right side: Buttons (dashboard only) + ModeToggle */}
+        <div className="flex items-center gap-3 flex-nowrap">
+          {!isAuthPage && user && (
+            <>
+              {user.role === "Admin" && (
+                <NavigationButton
+                  buttonText="Statistics"
+                  buttonRoute="/dashboard/stats"
+                  className="bg-[var(--btn-statistics)] hover:bg-yellow-500 text-yellow-700"
+                  icon=""
+                />
+              )}
+
+              <NavigationButton
+                buttonText="+ New Project"
+                buttonRoute="/new-project"
+                className="bg-[var(--btn-new-project)] hover:bg-violet-500 text-violet-700"
+                icon=""
+              />
+
+              <Button
+                onClick={handleLogout}
+                className="bg-[var(--btn-logout)] hover:bg-red-500 text-red-700 px-6 py-3 rounded-md transition cursor-pointer"
+              >
+                Logout
+              </Button>
+            </>
+          )}
+
+          {/* ModeToggle always present, stays on same row */}
+          <ModeToggle />
+        </div>
+      </div>
+    </header>
+  );
 };
 
 export default DashboardHeader;

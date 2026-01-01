@@ -187,12 +187,13 @@ const DashboardStatsComponent = () => {
 						animate='visible'
 						variants={fadeUp}
 						custom={6}
-						className='overflow-x-auto'
+						className='w-full'
 					>
-						<div className='bg-white/20 dark:bg-neutral-900/50 backdrop-blur-md border border-white/30 dark:border-neutral-700 rounded-2xl shadow-md p-6'>
+						<div className='bg-white/20 dark:bg-neutral-900/50 backdrop-blur-md border border-white/30 dark:border-neutral-700 rounded-2xl shadow-md p-6 overflow-hidden'>
 							<h2 className='text-xl font-semibold mb-4 text-center text-card-foreground'>
 								Users
 							</h2>
+							<div className="w-full overflow-x-auto">
 							<table className='min-w-full table-auto border-collapse'>
 								<thead className='bg-muted'>
 									<tr>
@@ -238,6 +239,7 @@ const DashboardStatsComponent = () => {
 									))}
 								</tbody>
 							</table>
+							</div>
 						</div>
 					</motion.div>
 				)}

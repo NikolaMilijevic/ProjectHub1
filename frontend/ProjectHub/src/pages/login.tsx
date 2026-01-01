@@ -32,7 +32,7 @@ const Login = () => {
 			<DashboardHeader />
 
 			{/* Soft Gradient / Glow Background */}
-			<div className="absolute inset-x-0 top-22 bottom-0 pointer-events-none overflow-hidden z-0">
+			<div className="absolute inset-x-0 top-20 bottom-0 pointer-events-none overflow-hidden z-0">
   <div
     className="absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[120%] rounded-3xl
       bg-gradient-to-br from-purple-500 via-purple-200/20 to-transparent
